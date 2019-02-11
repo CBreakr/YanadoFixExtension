@@ -1,8 +1,4 @@
 
-.aKz {
-    font-size: 40px !important;
-}
-
 .yn-finish-task-cb-input {
 	display:none !important;
 }
@@ -10,3 +6,10 @@
 .yn-td-archive {
 	display:none !important;
 }
+
+.yn-group-kanban-view-name, 
+.yn-group-list-view-name, 
+.yn-group-card-view-name
+{
+  cursor: pointer;
+{
