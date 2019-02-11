@@ -6,8 +6,8 @@ function RunSetup(){
 	|| event.target.classList.contains('yn-group-list-view-name')
 	|| event.target.classList.contains('yn-group-card-view-name')
     ) {
-	var content = event.target.innerHTML;
-	var groupId = event.target.getAttribute("yn-group-id");
+	let content = event.target.innerHTML;
+	let groupId = event.target.getAttribute("yn-group-id");
 	if(groupId == null || groupId.indexOf("project") !== -1){
 	  FindMatchAndClick(content);
 	}
@@ -15,16 +15,16 @@ function RunSetup(){
 	//  alert("not a project name");
 	}
     }
-  });
+  });  
 }
 
 function FindMatchAndClick(name){
-  var projects = document.querySelectorAll(".projectName");
+  let projects = document.querySelectorAll(".projectName");
   if(projects != null){
-    var index;
+    let index;
     for(index = 0; index < projects.length; index++){
-	var value = projects[index].innerHTML;
-	if(value === name){
+	let value = projects[index].innerHTML;
+	if(value === name){	  
 	  projects[index].click();
 	  break;
 	}

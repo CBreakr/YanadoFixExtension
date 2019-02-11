@@ -1,8 +1,8 @@
 {
-  "manifest_version": 21,
+  "manifest_version": 26,
 
   "name": "Modify Yanado",
-  "version": "0.5.10",
+  "version": "0.5.15",
   "description": "Remove archiving checkboxes, add click",
 
   "content_scripts": [{
