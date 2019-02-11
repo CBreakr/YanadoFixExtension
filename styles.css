@@ -1,15 +1,42 @@
 
-.yn-finish-task-cb-input {
-	display:none !important;
+.yn-finish-task-cb {
+  display:none !important;
 }
 
-.yn-td-archive {
-	display:none !important;
+/*
+.yn-finish-task-cb-input {
+  display:none !important;
 }
+*/
+
+.yn-finish {
+  display:none !important;
+}
+
+/*
+.yn-td-archive {
+  display:none !important;
+}
+*/
 
 .yn-group-kanban-view-name, 
 .yn-group-list-view-name, 
 .yn-group-card-view-name
 {
   cursor: pointer;
-{
+}
+
+#actionControls .yn-comment-send{
+  display:none !important;
+}
+
+#actionControls .yn-comment-action span {
+  display: none !important;
+}
+
+#actionControls .yn-comment-action:after {
+  content: "(Ctrl+Enter to Save Comment)";
+  font-size: 12px; 
+  opacity: 0.6; 
+  color: rgb(81, 93, 111);
+}
