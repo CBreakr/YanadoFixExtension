@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+
+  "name": "Modify Yanado",
+  "version": "1.0.2",
+  "description": "Remove archiving checkboxes",
+
+  "content_scripts": [{
+    "css": ["styles.css"],
+    "js": ["content.js"],
+    "matches": ["*://mail.google.com/*"]
+  }],
+
+  "web_accessible_resources": ["script.js"]
+}
