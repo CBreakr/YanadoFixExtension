@@ -50,7 +50,7 @@ function CreateToddButtonAction(){
       NewButton.className = "ToddButton";
 
       NewButton.style.position="absolute";
-      NewButton.style.right = "12%";
+      NewButton.style.right = "10%";
       NewButton.style.top = rect.top + 32 + "px";
       NewButton.style.zIndex = "10";
 
