@@ -16,12 +16,77 @@
   padding-left: 3px !important;
 }
 
-.yn-group-kanban-view-name, 
-.yn-group-list-view-name, 
+.yn-group-kanban-view-name,
+.yn-group-list-view-name,
 .yn-group-card-view-name
 {
   cursor: pointer;
 }
+
+/*
+Hide the due date times outside of 6AM-8PM
+*/
+.yn-due-time-select[yn-due-time="12:00 AM"],
+.yn-due-time-select[yn-due-time="12:30 AM"],
+.yn-due-time-select[yn-due-time="1:00 AM"],
+.yn-due-time-select[yn-due-time="1:30 AM"],
+.yn-due-time-select[yn-due-time="2:00 AM"],
+.yn-due-time-select[yn-due-time="2:30 AM"],
+.yn-due-time-select[yn-due-time="3:00 AM"],
+.yn-due-time-select[yn-due-time="3:30 AM"],
+.yn-due-time-select[yn-due-time="4:00 AM"],
+.yn-due-time-select[yn-due-time="4:30 AM"],
+.yn-due-time-select[yn-due-time="5:00 AM"],
+.yn-due-time-select[yn-due-time="5:30 AM"],
+.yn-due-time-select[yn-due-time="8:30 PM"],
+.yn-due-time-select[yn-due-time="9:00 PM"],
+.yn-due-time-select[yn-due-time="9:30 PM"],
+.yn-due-time-select[yn-due-time="10:00 PM"],
+.yn-due-time-select[yn-due-time="10:30 PM"],
+.yn-due-time-select[yn-due-time="11:00 PM"],
+.yn-due-time-select[yn-due-time="11:30 PM"]
+{
+  display:none;
+}
+
+/*
+ToddButton
+*/
+
+.ToddButton {
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0,0,0,.2);
+
+  background-image: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,.3)), to(rgba(255,255,255,0)));
+  background-image: -webkit-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+  background-image: -moz-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+  background-image: -ms-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+  background-image: -o-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+  background-image: linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
+
+  background-color: #269CE9;
+  border-color: #269CE9;
+}
+
+.ToddButton:hover {
+  background-color: #70B9E8;
+}
+
+.ToddButton:active {
+  background: #269CE9;
+}
+
+.ToddButton[disabled],
+.ToddButton[disabled]:hover,
+.ToddButton[disabled]:active{
+  border-color: #269CE9;
+  background: #269CE9;
+  color: #93D5FF;
+}
+
+/*
+alter the comment save
+*/
 
 #actionControls .yn-comment-send{
   display:none !important;
@@ -33,7 +98,7 @@
 
 #actionControls .yn-comment-action:after {
   content: "(Press CTRL+ENTER to Save Comment)";
-  font-size: 12px; 
-  opacity: 0.6; 
+  font-size: 12px;
+  opacity: 0.6;
   color: rgb(81, 93, 111);
 }
