@@ -1,10 +1,46 @@
 
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//
+// INITIAL SETUP
+//
+
 RunSetup();
 
 function RunSetup(){
-
+  AllTaskClickHeader();
   CreateToddButton();
+  SnoozeButton();
+}
 
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//
+// specific functions
+//
+//////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//
+// All Task Click Header
+//
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+
+//
+//
+//
+function AllTaskClickHeader(){
   document.querySelector('body').addEventListener('click', function (event) {
     if (event.target.classList.contains('yn-group-kanban-view-name')
 	|| event.target.classList.contains('yn-group-list-view-name')
@@ -23,21 +59,28 @@ function RunSetup(){
 }
 
 //////////////////////////////////////////////////////////
-//
-// specific functions
-//
-
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 //
 // bring to Todd's attention
 //
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 
 const ToddAttentionTag = "#ToddAttention";
 
+//
+//
+//
 function CreateToddButton() {
   console.log("INSIDE CREATE BUTTON");
   RunTimedLoopingCheck(CreateToddButtonAction());
 }
 
+//
+//
+//
 function CreateToddButtonAction(){
   return {
     checkFunction:isVisible,
@@ -66,6 +109,9 @@ function CreateToddButtonAction(){
   };
 }
 
+//
+//
+//
 function GetToddsAttention(event) {
   const Actions = [];
 
@@ -102,7 +148,9 @@ function GetToddsAttention(event) {
   RunActions(Actions);
 }
 
+//
 // if we're not in Yanado mode, swotch to Yanado
+//
 function CreateSwitchToYanadoAction(){
   return {
     checkFunction:() => true,
@@ -118,7 +166,9 @@ function CreateSwitchToYanadoAction(){
   };
 }
 
+//
 // if we have the All Tasks button, click it
+//
 function CreateAllTaskClickAction(){
   return {
     checkFunction:() => isVisible(".projectName[title='All Tasks']"),
@@ -133,7 +183,9 @@ function CreateAllTaskClickAction(){
   };
 }
 
+//
 // after All Tasks is clicked, need to wait until tasks are loaded in
+//
 function CreateTaskLoadingWaitAction(){
   return {checkFunction: () => {
     const task = document.querySelector("div[yn-type='TASK']");
@@ -149,8 +201,10 @@ function CreateTaskLoadingWaitAction(){
   note:"task loading wait"};
 }
 
+//
 // click on the question-mark icon if the
 // search field isn't yet available
+//
 function CreateQuestionIconClickAction(){
   return {checkFunction: () => {
     return true; // no reason to wait at this point
@@ -167,7 +221,9 @@ function CreateQuestionIconClickAction(){
   note:"question icon click"};
 }
 
+//
 // fill in the search field to get Todd's Attention
+//
 function CreateEnterToddAttentionSearchAction(){
   return {
     checkFunction: () => {
@@ -201,10 +257,66 @@ function CreateEnterToddAttentionSearchAction(){
 }
 
 //////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 //
-// Utilities
+// Snooze Button Functionality
 //
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 
+//
+//
+//
+function SnoozeButton(){
+  console.log("SNOOZE BUTTON!");
+
+  // on open task:
+  // - create and attach spacer and SNooze option to dropdown
+  //  --> (need to make sure that this process doesn't create duplicates)
+  //  - add click listener to do:
+  //
+  // - click due date link
+  // - click "Custom" option from dropdown
+  // - loop through table:
+  //    - find the current due date
+  //    - attempt to add X days to it (2 for now)
+  //      - step forward 2 days
+  //        - if we're on a weekday, click to set
+  //        - if we're on a weekend:
+  //          - if we're on the last row:
+  //            - click the next month button
+  //              --> OK, this is a tricky step
+  //                --> this seems like a new Action
+  //                  --> do we have a way of inserting a new Action?
+  //            - find the first weekday not from previous month
+  //          - go to next row and click on first weekday
+  //  - add to the snooze value for the tasks
+  //    - To Be Determined
+  //
+
+  // looking for class xdsoft_current
+  // avoid class xdsoft_other_month
+
+}
+
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
+//
+// UTILITIES
+//
+//////////////////////////////////////////////////////////
+
+//
+//
+//
 function isVisible(identifier) {
     let element = document.querySelector(identifier);
     if(element){
@@ -214,38 +326,37 @@ function isVisible(identifier) {
       const vistest2 = style.display !== "none";
       const vistest3 = style.visibility !== "hidden";
 
-      const zIndex = style.zIndex;
-
-      console.log(`test1: ${vistest1} test2: ${vistest2} test3:${vistest3}`);
-      console.log(`z-index: ${zIndex}`);
-
       return vistest1 && vistest2 && vistest3;
     }
     return false;
 }
 
+//
+//
+//
 function isDisabled(identifier){
   let element = document.querySelector(identifier);
   if(element){
-    console.log(`is ${identifier} disabled: ${element.disabled}`);
     return element.disabled;
   }
 }
 
+//
+//
+//
 function FillTextboxValue(identifier, value){
   let item = document.querySelector(identifier);
   if(item){
-    console.log(`we have an item to fill: ${identifier}, and value: ${value}`);
     item.value = value;
-    console.log(`do we match?: ${item.value} and ${value}`);
   }
 }
 
+//
+//
+//
 function FindMatchAndClick(identifier, inner){
-  console.log(`looking for: ${identifier}`);
   let items = document.querySelectorAll(identifier);
   if(items){
-    console.log(`we have items: ${identifier}, ${items.length}`);
     let index;
     for(index = 0; index < items.length; index++){
     	let value = items[index].innerHTML;
@@ -258,17 +369,29 @@ function FindMatchAndClick(identifier, inner){
   }
 }
 
+// I might want some basic functionality for looping
+// through table rows/cells
+
+//
+// - get rows with cells
+// - function to apply
+// - function to apply on "success"
+// - function to apply on "failure"
+//
+
 //
 // running through loops
 //
 
+//
 // take in a lst of actions and process them
 // through the looper one at a time
 function RunActions(Actions){
   if(Actions && Actions.length > 0){
     let index = 0;
 
-    const callback = () => {
+    const callback = (Err) => {
+      if(Err) throw Err;
       if(index < Actions.length){
         console.log(`run at index: ${index}`);
         RunTimedLoopingCheck(Actions[index++], callback);
@@ -279,6 +402,9 @@ function RunActions(Actions){
   }
 }
 
+//
+//
+//
 function RunTimedLoopingCheck(
   {checkFunction,
   resultFunction,
@@ -303,15 +429,16 @@ function RunTimedLoopingCheck(
       setTimeout(loopFunction, checkInterval);
     }
     else{
-      alert("ran out of time");
+      callback(new Error(`Ran out of time on: ${note}`));
     }
   }
 
   loopFunction();
 }
 
+//
 // from http://jsbin.com/awenaq/3/edit?html,css,js,output
-
+//
 function __triggerKeyboardEvent(el, keyCode)
 {
     var eventObj = document.createEventObject ?
