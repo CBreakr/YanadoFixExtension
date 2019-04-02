@@ -238,31 +238,6 @@ function CreateEnterToddAttentionSearchAction(){
         let text = document.querySelector('.yn-input-search');
         text.focus();
 
-        // OK, I shoukd double check to see
-        // if there's some other delaying effect
-        // that's making this enter event not work as expected
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-
         /*
         text.addEventListener("keypress", () => {
           console.log("keypress test for text");
@@ -270,7 +245,6 @@ function CreateEnterToddAttentionSearchAction(){
 
         __triggerKeyboardEvent(text, 13);
         */
-
       }, 50);
     },
     checkPayload:null,
@@ -292,6 +266,7 @@ function CreateEnterToddAttentionSearchAction(){
 //////////////////////////////////////////////////////////
 
 const SNOOZE_INTERVAL = 2;
+const SNOOZE_FIELD_NAME = "SnoozeCount";
 
 //
 //
@@ -305,7 +280,6 @@ function SetupSnoozeButton(){
   document.addEventListener("click", (event) => {
     const element = event.target;
     if(element.matches("span.yn-overflow")){
-      console.log("we have an overflow icon");
       RunTimedLoopingCheck(CreateSnoozeOptionAction());
     }
   }, false);
@@ -444,7 +418,7 @@ function DateDeterminationAction(){
           yearToUse = year;
           monthToUse = month;
           // add month select action
-          console.log("months don't match");
+          console.log("months don't match, but years do");
           const SelectMonth = SelectMonthAction();
           SelectMonth.checkPayload = yearToUse;
           SelectMonth.resultPayload = monthToUse;
@@ -456,12 +430,9 @@ function DateDeterminationAction(){
         else{
           // either we're int he same month/year,
           // or the selected due date is later than today
-          console.log("matching month and year");
+          console.log("matching month and year, or current ones are ahead of due date");
           yearToUse = currentlySelectedYear;
           monthToUse = currentlySelectedMonth;
-
-          ListOutActions(ActionList, index);
-
           ActionList[index+1].checkPayload = {year:yearToUse, month:monthToUse};
         }
       },
@@ -487,12 +458,6 @@ function SelectYearAction(){
     resultFunction: (year) => {
       const yearSelect = document.querySelector(".xdsoft_yearselect");
       const matchYear = yearSelect.querySelector(`div[data-value='${year}']`);
-      if(matchYear){
-        console.log(`MATCH FOUND FOR YEAR: ${year}`);
-      }
-      else{
-        console.log(`NO MATCH YEAR FOR ${year}`);
-      }
       triggerMouseEvent(matchYear, "mousedown");
     },
     checkPayload: null,
@@ -545,45 +510,39 @@ function CalendarTraversalAction(){
       // I should be able to find at least one of them
       // if I find both, then use the latest
 
-      console.log("calendar traversal is hard!!!!!");
-
       let AllDates = document.querySelectorAll("div.xdsoft_calendar table tbody tr td");
-      console.log(`dates: ${AllDates.length}`);
       let candidateDueDate = null;
       let markedDateIndex = null;
       let daysAfter = 0;
       for(let i = 0; i < AllDates.length; i++){
         const thisDay = AllDates[i];
 
-        if(hasClass(thisDay, "xdsoft_other_month")){
+        if(hasClass(thisDay, "xdsoft_other_month")
+          || hasClass(thisDay, "xdsoft_weekend")){
           continue;
         }
 
         if(hasClass(thisDay, "xdsoft_today")){
-          console.log(`today found: ${i}`);
           markedDateIndex = i;
           candidateDueDate = null;
           daysAfter = 0;
         }
 
         if(!monthSwitched && hasClass(thisDay, "xdsoft_current")){
-          console.log(`due date found: ${i}`);
           markedDateIndex = i;
           candidateDueDate = null;
           daysAfter = 0;
         }
 
-        if(
-          i > markedDateIndex){
+        if(i > markedDateIndex){
           daysAfter++;
         }
 
         // at least two non-weekend days after
         if(markedDateIndex
-          && i >= markedDateIndex + SNOOZE_INTERVAL
+          && daysAfter >= SNOOZE_INTERVAL
           && !candidateDueDate
           && !hasClass(thisDay, "xdsoft_weekend")){
-            console.log(`found a candidate: ${i}`);
             candidateDueDate = thisDay;
           }
       }
@@ -592,19 +551,17 @@ function CalendarTraversalAction(){
         // this one seems to be a click
         // rather than a mousedown
         let date = candidateDueDate.getAttribute("data-date");
-        console.log(`we have a candidate date: ${date}: ${candidateDueDate.outerHTML}`);
         candidateDueDate.click();
       }
       else{
-        console.log("no candidate date, need for next month");
         // we need to go to the next month
         const nextMonthButton = document.querySelector("div.xdsoft_datepicker button.xdsoft_next");
         triggerMouseEvent(nextMonthButton, "mousedown");
         triggerMouseEvent(nextMonthButton, "mouseup");
         const NextMonth = NextMonthCalendarAction();
         NextMonth.checkPayload = passedMonth+1;
-        // any leftover days we need to step
-        NextMonth.resultPayload = SNOOZE_INTERVAL - daysAfter;
+        // any leftover days we need to step additionally
+        NextMonth.resultPayload = SNOOZE_INTERVAL - daysAfter - 1;
         ActionList.splice(index+1, 0, NextMonth);
       }
     },
@@ -641,18 +598,18 @@ function NextMonthCalendarAction(){
       if(daysToAdd < 0){
         daysToAdd = 0;
       }
+
       let AllDates = document.querySelectorAll("div.xdsoft_calendar table tbody tr td");
       for(let i = 0; i < AllDates.length; i++){
         // :not('.xdsoft_other_month'):not('.xdsoft_weekend')
         const thisDay = AllDates[i];
-        if(hasClass(thisDay, "") || hasClass(thisDay, "")){
+        if(hasClass(thisDay, "xdsoft_other_month") || hasClass(thisDay, "xdsoft_weekend")){
           continue;
         }
         if(!daysToAdd && thisDay){
           const dateValue = thisDay.getAttribute("data-date");
-          console.log(`inside data date: ${dateValue}`);
           thisDay.click();
-          break;;
+          break;
         }
         daysToAdd--;
       }
@@ -666,13 +623,30 @@ function NextMonthCalendarAction(){
 }
 
 function AddSnoozeValueActionAndClose(){
+  let input = null;
   return {
     checkFunction: () => {
       // what would I be checking here?
-      return true;
+      if(!input){
+        input = FindSnoozeInput();
+      }
+
+      if(input && isVisibleElement(input)){
+        return true;
+      }
+
+      return false;
     },
     resultFunction: () => {
-      console.log("ADD SNOOZE VALUE! THEN CLOSE!");
+      let val = input.value;
+      if(!val){
+        val = 1;
+      }
+      else{
+        val = Number(val) + 1;
+      }
+      input.value = val;
+      input.focus()
       CloseItem();
     },
     checkPayload: null,
@@ -683,10 +657,30 @@ function AddSnoozeValueActionAndClose(){
   };
 }
 
+function FindSnoozeInput(){
+  const findLabels = document.querySelectorAll(".yn-material-input-group label");
+
+  if(findLabels && findLabels.length > 0){
+    for(let label of findLabels){
+      if(label.innerHTML == SNOOZE_FIELD_NAME){
+        const snoozeInput = label.parentNode.querySelector("input[type='number']");
+        if(snoozeInput){
+          return snoozeInput;
+        }
+      }
+    }
+  }
+
+  return null;
+}
+
 function CloseItem(){
   // at the end, close the task down
   const closeIcon = document.querySelector("span.yn-fl-close");
-  closeIcon.click();
+  closeIcon.focus();
+  setTimeout(() => {
+    closeIcon.click();
+  }, 100);
 }
 
 // so I need to find the input with a
@@ -746,15 +740,19 @@ function ListOutActions(ActionList, index){
 function isVisible(identifier) {
     let element = document.querySelector(identifier);
     if(element){
-      var style = window.getComputedStyle(element);
-
-      const vistest1 = !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
-      const vistest2 = style.display !== "none";
-      const vistest3 = style.visibility !== "hidden";
-
-      return vistest1 && vistest2 && vistest3;
+      return isVisibleElement(element);
     }
     return false;
+}
+
+function isVisibleElement(element){
+  var style = window.getComputedStyle(element);
+
+  const vistest1 = !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
+  const vistest2 = style.display !== "none";
+  const vistest3 = style.visibility !== "hidden";
+
+  return vistest1 && vistest2 && vistest3;
 }
 
 //
