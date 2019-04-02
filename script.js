@@ -42,7 +42,6 @@ function RunSetup(){
 //
 function AllTaskClickHeader(){
   document.querySelector('body').addEventListener('click', function (event) {
-    console.log("clicked body");
     if (event.target.classList.contains('yn-group-kanban-view-name')
 	|| event.target.classList.contains('yn-group-list-view-name')
 	|| event.target.classList.contains('yn-group-card-view-name')
@@ -239,6 +238,31 @@ function CreateEnterToddAttentionSearchAction(){
         let text = document.querySelector('.yn-input-search');
         text.focus();
 
+        // OK, I shoukd double check to see
+        // if there's some other delaying effect
+        // that's making this enter event not work as expected
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+
         /*
         text.addEventListener("keypress", () => {
           console.log("keypress test for text");
@@ -279,7 +303,6 @@ function SetupSnoozeButton(){
   // looking for the div yn-type="TASK"
 
   document.addEventListener("click", (event) => {
-    console.log("clicked document");
     const element = event.target;
     if(element.matches("span.yn-overflow")){
       console.log("we have an overflow icon");
@@ -320,62 +343,6 @@ function CreateSnoozeOption(){
     });
     optionList.appendChild(listItem);
   }
-
-  /*
-  MAJOR CHANGE!!!!!!
-
-  - I need to find the latest of the due date and the current date
-    and then use that as the launching point for the snooze,
-    rather than just using the due date
-  - this comes with an issue of the months in the custom display:
-    if the due date is in a previous month, it will show that month
-  - so I'll have to check if the due date is in a different month
-    than the curent date and act accordingly
-      - if it's behind, then it doesn't matter
-      - if it's ahead, I need to step ahead that many forward
-      - if it's in the same month, then I need to find which is later
-      ==> when I have the latest date, I can move on with the rest
-  */
-
-  //
-  // - click due date link (check date link visible; click link)
-  // - click "Custom" option from dropdown (check CUstom option visible; click option)
-  // - loop through table: (calendar visible; begin loop)
-  //    - find the current due date
-  //    - attempt to add X days to it (2 for now)
-  //      - step forward 2 days
-  //        - if we're on a weekday, click to set
-  //        - if we're on a weekend:
-  //          - if we're on the last row:
-  //            - click the next month button
-  //              --> OK, this is a tricky step
-  //                --> this seems like a new Action
-  //                  --> do we have a way of inserting a new Action?
-  //            - find the first weekday not from previous month
-  //          - go to next row and click on first weekday
-  //  - add to the snooze value for the tasks
-  //    - See below
-  //
-
-  // so it looks like I need to find the label with the matching field value
-  // inside of a div with yn-form-field-type="NUMBER"
-  // and then find the sibling input
-  // and set the value there to be value + 1
-  /*
-  <div class="yn-task-form-field-item yn-floating-div-bubble" yn-form-field-id="9111" yn-form-field-type="NUMBER">
-    <div class="yn-material-input-group yn-block">
-      <input required="" value="15" name="NUMBER-9111" type="number" step="any" class="yn-material-input yn-no-required yn-form-field-input" yn-autosave="true">
-
-      <span class="yn-bar"></span>
-      <label>TestNumber</label>
-    </div>
-    <i class="yn-form-field-loading yn-ficon-spin animate-spin yn-loading-show"></i>
-  </div>
-  */
-
-  // in the calendar
-  // looking for class xdsoft_current
-  // avoid class xdsoft_other_month
 }
 
 function RunSnooze(){
@@ -422,40 +389,6 @@ function ClickCustomDueDateAction(resultPayload){
     note: "Click Custom Date"
   };
 }
-
-/*
-<div class="xdsoft_label xdsoft_month">
-  <span>April</span>
-  <div class="xdsoft_select xdsoft_monthselect xdsoft_scroller_box">
-    <div style="margin-top: 0px;">
-      <div class="xdsoft_option " data-value="0">January</div>
-      <div class="xdsoft_option " data-value="1">February</div>
-      <div class="xdsoft_option " data-value="2">March</div>
-      <div class="xdsoft_option xdsoft_current" data-value="3">April</div>
-      <div class="xdsoft_option " data-value="4">May</div>
-      <div class="xdsoft_option " data-value="5">June</div>
-      <div class="xdsoft_option " data-value="6">July</div>
-      <div class="xdsoft_option " data-value="7">August</div>
-      <div class="xdsoft_option " data-value="8">September</div>
-      <div class="xdsoft_option " data-value="9">October</div>
-      <div class="xdsoft_option " data-value="10">November</div>
-      <div class="xdsoft_option " data-value="11">December</div>
-    </div>
-    <div class="xdsoft_scrollbar">
-      <div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 0px;">
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="xdsoft_label xdsoft_year">
-  <span>2019</span>
-  <div class="xdsoft_select xdsoft_yearselect xdsoft_scroller_box" style="display: block;">
-  <div style="margin-top: -1656px;">
-  <div class="xdsoft_option " data-value="1950">1950</div>
-  <div class="xdsoft_option " data-value="1951">1951</div><div class="xdsoft_option " data-value="1952">1952</div><div class="xdsoft_option " data-value="1953">1953</div><div class="xdsoft_option " data-value="1954">1954</div><div class="xdsoft_option " data-value="1955">1955</div><div class="xdsoft_option " data-value="1956">1956</div><div class="xdsoft_option " data-value="1957">1957</div><div class="xdsoft_option " data-value="1958">1958</div><div class="xdsoft_option " data-value="1959">1959</div><div class="xdsoft_option " data-value="1960">1960</div><div class="xdsoft_option " data-value="1961">1961</div><div class="xdsoft_option " data-value="1962">1962</div><div class="xdsoft_option " data-value="1963">1963</div><div class="xdsoft_option " data-value="1964">1964</div><div class="xdsoft_option " data-value="1965">1965</div><div class="xdsoft_option " data-value="1966">1966</div><div class="xdsoft_option " data-value="1967">1967</div><div class="xdsoft_option " data-value="1968">1968</div><div class="xdsoft_option " data-value="1969">1969</div><div class="xdsoft_option " data-value="1970">1970</div><div class="xdsoft_option " data-value="1971">1971</div><div class="xdsoft_option " data-value="1972">1972</div><div class="xdsoft_option " data-value="1973">1973</div><div class="xdsoft_option " data-value="1974">1974</div><div class="xdsoft_option " data-value="1975">1975</div><div class="xdsoft_option " data-value="1976">1976</div><div class="xdsoft_option " data-value="1977">1977</div><div class="xdsoft_option " data-value="1978">1978</div><div class="xdsoft_option " data-value="1979">1979</div><div class="xdsoft_option " data-value="1980">1980</div><div class="xdsoft_option " data-value="1981">1981</div><div class="xdsoft_option " data-value="1982">1982</div><div class="xdsoft_option " data-value="1983">1983</div><div class="xdsoft_option " data-value="1984">1984</div><div class="xdsoft_option " data-value="1985">1985</div><div class="xdsoft_option " data-value="1986">1986</div><div class="xdsoft_option " data-value="1987">1987</div><div class="xdsoft_option " data-value="1988">1988</div><div class="xdsoft_option " data-value="1989">1989</div><div class="xdsoft_option " data-value="1990">1990</div><div class="xdsoft_option " data-value="1991">1991</div><div class="xdsoft_option " data-value="1992">1992</div><div class="xdsoft_option " data-value="1993">1993</div><div class="xdsoft_option " data-value="1994">1994</div><div class="xdsoft_option " data-value="1995">1995</div><div class="xdsoft_option " data-value="1996">1996</div><div class="xdsoft_option " data-value="1997">1997</div><div class="xdsoft_option " data-value="1998">1998</div><div class="xdsoft_option " data-value="1999">1999</div><div class="xdsoft_option " data-value="2000">2000</div><div class="xdsoft_option " data-value="2001">2001</div><div class="xdsoft_option " data-value="2002">2002</div><div class="xdsoft_option " data-value="2003">2003</div><div class="xdsoft_option " data-value="2004">2004</div><div class="xdsoft_option " data-value="2005">2005</div><div class="xdsoft_option " data-value="2006">2006</div><div class="xdsoft_option " data-value="2007">2007</div><div class="xdsoft_option " data-value="2008">2008</div><div class="xdsoft_option " data-value="2009">2009</div><div class="xdsoft_option " data-value="2010">2010</div><div class="xdsoft_option " data-value="2011">2011</div><div class="xdsoft_option " data-value="2012">2012</div><div class="xdsoft_option " data-value="2013">2013</div><div class="xdsoft_option " data-value="2014">2014</div><div class="xdsoft_option " data-value="2015">2015</div><div class="xdsoft_option " data-value="2016">2016</div><div class="xdsoft_option " data-value="2017">2017</div><div class="xdsoft_option " data-value="2018">2018</div><div class="xdsoft_option xdsoft_current" data-value="2019">2019</div><div class="xdsoft_option " data-value="2020">2020</div><div class="xdsoft_option " data-value="2021">2021</div><div class="xdsoft_option " data-value="2022">2022</div><div class="xdsoft_option " data-value="2023">2023</div><div class="xdsoft_option " data-value="2024">2024</div><div class="xdsoft_option " data-value="2025">2025</div><div class="xdsoft_option " data-value="2026">2026</div><div class="xdsoft_option " data-value="2027">2027</div><div class="xdsoft_option " data-value="2028">2028</div><div class="xdsoft_option " data-value="2029">2029</div><div class="xdsoft_option " data-value="2030">2030</div><div class="xdsoft_option " data-value="2031">2031</div><div class="xdsoft_option " data-value="2032">2032</div><div class="xdsoft_option " data-value="2033">2033</div><div class="xdsoft_option " data-value="2034">2034</div><div class="xdsoft_option " data-value="2035">2035</div><div class="xdsoft_option " data-value="2036">2036</div><div class="xdsoft_option " data-value="2037">2037</div><div class="xdsoft_option " data-value="2038">2038</div><div class="xdsoft_option " data-value="2039">2039</div><div class="xdsoft_option " data-value="2040">2040</div><div class="xdsoft_option " data-value="2041">2041</div><div class="xdsoft_option " data-value="2042">2042</div><div class="xdsoft_option " data-value="2043">2043</div><div class="xdsoft_option " data-value="2044">2044</div><div class="xdsoft_option " data-value="2045">2045</div><div class="xdsoft_option " data-value="2046">2046</div><div class="xdsoft_option " data-value="2047">2047</div><div class="xdsoft_option " data-value="2048">2048</div><div class="xdsoft_option " data-value="2049">2049</div><div class="xdsoft_option " data-value="2050">2050</div></div><div class="xdsoft_scrollbar"><div class="xdsoft_scroller" style="display: block; height: 10px; margin-top: 109.717px;"></div></div></div>
-</div>
-*/
 
 function DateDeterminationAction(){
     return {
@@ -673,29 +606,6 @@ function CalendarTraversalAction(){
         // any leftover days we need to step
         NextMonth.resultPayload = SNOOZE_INTERVAL - daysAfter;
         ActionList.splice(index+1, 0, NextMonth);
-
-        // THIS IS NOT WORKING QUITE RIGHT
-        //  --> IT'S HOLDING DOWN AND MOVING
-        //  --> WHEN I REALLY JUST NEED TO MAKE IT
-        //  --> HAPPEN ONCE
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-        //
-
-        ListOutActions(ActionList, index);
       }
     },
     checkPayload: null,
