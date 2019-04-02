@@ -42,6 +42,7 @@ function RunSetup(){
 //
 function AllTaskClickHeader(){
   document.querySelector('body').addEventListener('click', function (event) {
+    console.log("clicked body");
     if (event.target.classList.contains('yn-group-kanban-view-name')
 	|| event.target.classList.contains('yn-group-list-view-name')
 	|| event.target.classList.contains('yn-group-card-view-name')
@@ -251,7 +252,7 @@ function CreateEnterToddAttentionSearchAction(){
     checkPayload:null,
     resultPayload:null,
     checkInterval:200,
-    maxInterval:5000,
+    maxInterval:6000,
     note:"enter Todd search"
   };
 }
@@ -266,6 +267,8 @@ function CreateEnterToddAttentionSearchAction(){
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
 
+const SNOOZE_INTERVAL = 2;
+
 //
 //
 //
@@ -276,6 +279,7 @@ function SetupSnoozeButton(){
   // looking for the div yn-type="TASK"
 
   document.addEventListener("click", (event) => {
+    console.log("clicked document");
     const element = event.target;
     if(element.matches("span.yn-overflow")){
       console.log("we have an overflow icon");
@@ -313,9 +317,6 @@ function CreateSnoozeOption(){
     listItem.appendChild(document.createTextNode("Snooze"));
     listItem.addEventListener("click", (event) => {
       RunSnooze();
-      // at the end, close the task down
-      const closeIcon = document.querySelector("span.yn-fl-close");
-      closeIcon.click();
     });
     optionList.appendChild(listItem);
   }
@@ -385,7 +386,7 @@ function RunSnooze(){
   Actions.push(ClickCustomDueDateAction());
   Actions.push(DateDeterminationAction())
   Actions.push(CalendarTraversalAction());
-  // Actions.push(AddSnoozeValueActionAndClose());
+  Actions.push(AddSnoozeValueActionAndClose());
 
   RunActions(Actions);
 }
@@ -482,31 +483,27 @@ function DateDeterminationAction(){
 
         // determine if the selected date is before the current month
         if(currentlySelectedYear < year){
+          console.log("years don't match");
           yearToUse = year;
           monthToUse = month;
           // add year select action
-          console.log("year less than current");
           const SelectYear = SelectYearAction();
           SelectYear.resultPayload = year;
-          ActionList.splice(index, 0, SelectYear);
-
-          ListOutActions(ActionList, index);
+          ActionList.splice(index+1, 0, SelectYear);
 
           if(currentlySelectedMonth != month){
             // add month select action
             const SelectMonth = SelectMonthAction();
             SelectMonth.checkPayload = yearToUse;
             SelectMonth.resultPayload = monthToUse;
-            ActionList.splice(index+1, 0, SelectMonth);
+            ActionList.splice(index+2, 0, SelectMonth);
 
-            ListOutActions(ActionList, index);
-
-            ActionList[index+2].checkPayload = {year: yearToUse, month: monthToUse};
-            console.log(`altered check payload: ${ActionList[index+1].note}`);
+            ActionList[index+3].checkPayload = {year: yearToUse, month: monthToUse};
+            ActionList[index+3].resultPayload = true;
           }
           else{
-            ActionList[index+1].checkPayload = {year: yearToUse, month: monthToUse};
-            console.log(`altered check payload: ${ActionList[index+2].note}`);
+            ActionList[index+2].checkPayload = {year: yearToUse, month: monthToUse};
+            ActionList[index+2].resultPayload = true;
           }
         }
         else if(currentlySelectedYear == year
@@ -514,28 +511,25 @@ function DateDeterminationAction(){
           yearToUse = year;
           monthToUse = month;
           // add month select action
-          console.log("month less than current");
+          console.log("months don't match");
           const SelectMonth = SelectMonthAction();
           SelectMonth.checkPayload = yearToUse;
           SelectMonth.resultPayload = monthToUse;
-          ActionList.splice(index, 0, SelectMonth);
+          ActionList.splice(index+1, 0, SelectMonth);
 
-          ListOutActions(ActionList, index);
-
-          ActionList[index+1].checkPayload = {year:yearToUse, month:monthToUse};
-          console.log(`altered check payload: ${ActionList[index+1].note}`);
+          ActionList[index+2].checkPayload = {year:yearToUse, month:monthToUse};
+          ActionList[index+2].resultPayload = true;
         }
         else{
           // either we're int he same month/year,
           // or the selected due date is later than today
+          console.log("matching month and year");
           yearToUse = currentlySelectedYear;
           monthToUse = currentlySelectedMonth;
 
           ListOutActions(ActionList, index);
 
           ActionList[index+1].checkPayload = {year:yearToUse, month:monthToUse};
-          console.log("after setting checkPayload");
-          // console.log(`altered check payload: ${ActionList[index+1].note}`);
         }
       },
       checkPayload: null,
@@ -600,19 +594,109 @@ function SelectMonthAction(){
   };
 }
 
+// if we're swicthing anything, we need to be sure to ignore
+// the due date marked in the current month
+// as it's just an artifact of Yanado at that point
+
 function CalendarTraversalAction(){
+  let passedMonth = null;
   return {
     checkFunction: ({year, month}) => {
       // check that the selected month and year values match
+      passedMonth = month;
       return DoesSelectedYearMatch(year)
         && DoesSelectedMonthMatch(month);
     },
-    resultFunction: () => {
+    resultFunction: (monthSwitched, ActionList, index) => {
       // look for the current date and selected due date
       // I should be able to find at least one of them
       // if I find both, then use the latest
 
       console.log("calendar traversal is hard!!!!!");
+
+      let AllDates = document.querySelectorAll("div.xdsoft_calendar table tbody tr td");
+      console.log(`dates: ${AllDates.length}`);
+      let candidateDueDate = null;
+      let markedDateIndex = null;
+      let daysAfter = 0;
+      for(let i = 0; i < AllDates.length; i++){
+        const thisDay = AllDates[i];
+
+        if(hasClass(thisDay, "xdsoft_other_month")){
+          continue;
+        }
+
+        if(hasClass(thisDay, "xdsoft_today")){
+          console.log(`today found: ${i}`);
+          markedDateIndex = i;
+          candidateDueDate = null;
+          daysAfter = 0;
+        }
+
+        if(!monthSwitched && hasClass(thisDay, "xdsoft_current")){
+          console.log(`due date found: ${i}`);
+          markedDateIndex = i;
+          candidateDueDate = null;
+          daysAfter = 0;
+        }
+
+        if(
+          i > markedDateIndex){
+          daysAfter++;
+        }
+
+        // at least two non-weekend days after
+        if(markedDateIndex
+          && i >= markedDateIndex + SNOOZE_INTERVAL
+          && !candidateDueDate
+          && !hasClass(thisDay, "xdsoft_weekend")){
+            console.log(`found a candidate: ${i}`);
+            candidateDueDate = thisDay;
+          }
+      }
+
+      if(candidateDueDate){
+        // this one seems to be a click
+        // rather than a mousedown
+        let date = candidateDueDate.getAttribute("data-date");
+        console.log(`we have a candidate date: ${date}: ${candidateDueDate.outerHTML}`);
+        candidateDueDate.click();
+      }
+      else{
+        console.log("no candidate date, need for next month");
+        // we need to go to the next month
+        const nextMonthButton = document.querySelector("div.xdsoft_datepicker button.xdsoft_next");
+        triggerMouseEvent(nextMonthButton, "mousedown");
+        triggerMouseEvent(nextMonthButton, "mouseup");
+        const NextMonth = NextMonthCalendarAction();
+        NextMonth.checkPayload = passedMonth+1;
+        // any leftover days we need to step
+        NextMonth.resultPayload = SNOOZE_INTERVAL - daysAfter;
+        ActionList.splice(index+1, 0, NextMonth);
+
+        // THIS IS NOT WORKING QUITE RIGHT
+        //  --> IT'S HOLDING DOWN AND MOVING
+        //  --> WHEN I REALLY JUST NEED TO MAKE IT
+        //  --> HAPPEN ONCE
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+        //
+
+        ListOutActions(ActionList, index);
+      }
     },
     checkPayload: null,
     resultPayload: null,
@@ -622,43 +706,95 @@ function CalendarTraversalAction(){
   };
 }
 
-function ListOutActions(ActionList, index){
-  for(let i = 0; i < ActionList.length; i++){
-    console.log(`Action at ${i}: ${ActionList[i].note}, current index: ${index}`);
-  }
-}
-
 function DoesSelectedMonthMatch(month){
-  return true;
+  const monthSelected = document.querySelector("div.xdsoft_monthselect .xdsoft_current");
+  if(monthSelected.getAttribute("data-value") == month){
+    return true;
+  }
+  return false;
 }
 
 function DoesSelectedYearMatch(year){
-  return true;
+  const yearSelected = document.querySelector("div.xdsoft_yearselect .xdsoft_current");
+  if(yearSelected.getAttribute("data-value") == year){
+    return true;
+  }
+  return false;
 }
 
-// function NextMonthCalendarAction(){
-//   return {
-//     checkFunction,
-//     resultFunction,
-//     checkPayload,
-//     resultPayload,
-//     checkInterval,
-//     maxInterval,
-//     note
-//   };
-// }
+function NextMonthCalendarAction(){
+  return {
+    checkFunction: (monthToMatch) => {
+      return DoesSelectedMonthMatch(monthToMatch);
+    },
+    resultFunction: (daysToAdd) => {
+      if(daysToAdd < 0){
+        daysToAdd = 0;
+      }
+      let AllDates = document.querySelectorAll("div.xdsoft_calendar table tbody tr td");
+      for(let i = 0; i < AllDates.length; i++){
+        // :not('.xdsoft_other_month'):not('.xdsoft_weekend')
+        const thisDay = AllDates[i];
+        if(hasClass(thisDay, "") || hasClass(thisDay, "")){
+          continue;
+        }
+        if(!daysToAdd && thisDay){
+          const dateValue = thisDay.getAttribute("data-date");
+          console.log(`inside data date: ${dateValue}`);
+          thisDay.click();
+          break;;
+        }
+        daysToAdd--;
+      }
+    },
+    checkPayload: null,
+    resultPayload: null,
+    checkInterval: 50,
+    maxInterval: 1000,
+    note: "Next Month Calendar Action"
+  };
+}
+
+function AddSnoozeValueActionAndClose(){
+  return {
+    checkFunction: () => {
+      // what would I be checking here?
+      return true;
+    },
+    resultFunction: () => {
+      console.log("ADD SNOOZE VALUE! THEN CLOSE!");
+      CloseItem();
+    },
+    checkPayload: null,
+    resultPayload: null,
+    checkInterval:50,
+    maxInterval:2000,
+    note:"Add Snooze Value"
+  };
+}
+
+function CloseItem(){
+  // at the end, close the task down
+  const closeIcon = document.querySelector("span.yn-fl-close");
+  closeIcon.click();
+}
+
+// so I need to find the input with a
+// class of yn-form-field-input
+// and [type="number"]
+// and sibling label of "SnoozeCount"
 //
-// function AddSnoozeValueActionAndClose(){
-//   return {
-//     checkFunction,
-//     resultFunction,
-//     checkPayload,
-//     resultPayload,
-//     checkInterval,
-//     maxInterval,
-//     note
-//   }';'
-// }
+// OR maybe look for the parent and then loop
+//
+/*
+<div class="yn-material-input-group yn-block">
+  <input
+  required="" name="NUMBER-9111" type="number" step="any"
+  class="yn-material-input yn-no-required yn-form-field-input" yn-autosave="true">
+  <span class="yn-bar"></span>
+  <label>SnoozeCount</label>
+</div>
+*/
 
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
@@ -672,6 +808,27 @@ function DoesSelectedYearMatch(year){
 // UTILITIES
 //
 //////////////////////////////////////////////////////////
+
+//
+//
+//
+function hasClass(element, className){
+  if(element
+    && className
+    && element.classList.contains(className)){
+    return true;
+  }
+  return false;
+}
+
+//
+//
+//
+function ListOutActions(ActionList, index){
+  for(let i = 0; i < ActionList.length; i++){
+    console.log(`Action at ${i}: ${ActionList[i].note}, current index: ${index}`);
+  }
+}
 
 //
 //
@@ -753,7 +910,8 @@ function RunActions(Actions){
       if(Err) throw Err;
       if(index < Actions.length){
         console.log(`run at index: ${index}`);
-        RunTimedLoopingCheck(Actions[index++], index, Actions, callback);
+        let indexToPass = index++;
+        RunTimedLoopingCheck(Actions[indexToPass], callback, indexToPass, Actions);
       }
     }
 
@@ -772,9 +930,9 @@ function RunTimedLoopingCheck(
   checkInterval,
   maxInterval,
   note},
+  callback,
   index,
-  ActionList,
-  callback) {
+  ActionList) {
 
   let currentInterval = 0;
   const loopFunction = () => {
