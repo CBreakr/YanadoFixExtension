@@ -143,6 +143,10 @@ function GetToddsAttention(event) {
   Actions.push(CreateTaskLoadingWaitAction());
   Actions.push(CreateQuestionIconClickAction());
 
+  Actions.push(FilterIconClickAction());
+  Actions.push(FilterListClickAction());
+  Actions.push(FilterAllTasksClickAction());
+
   Actions.push(CreateEnterToddAttentionSearchAction());
 
   RunActions(Actions);
@@ -188,6 +192,7 @@ function CreateAllTaskClickAction(){
 //
 function CreateTaskLoadingWaitAction(){
   return {checkFunction: () => {
+    // wait for this to load
     const task = document.querySelector("div[yn-type='TASK']");
     return task;
   },
@@ -202,12 +207,74 @@ function CreateTaskLoadingWaitAction(){
 }
 
 //
+function FilterIconClickAction(){
+  // div.yn-bar-tasks-filter-trigger
+  return {
+    checkFunction:() => {
+      return isVisible("div.yn-bar-tasks-filter-trigger");
+    },
+    resultFunction:() => {
+      FindMatchAndClick("div.yn-bar-tasks-filter-trigger");
+    },
+    checkPayload:null,
+    resultPayload:null,
+    checkInterval:50,
+    maxInterval:2000,
+    note:"Filter Icon Click"
+  };
+}
+
+//
+function FilterListClickAction(){
+  // div.yn-dropdown-trigger-elem yn-material-dropdown
+  // with child span that contains All Tasks
+  return {
+    checkFunction:() => {
+      return isVisible("div.yn-btfdd-filter-by-dd div.yn-dropdown-trigger-elem");
+    },
+    resultFunction:() => {
+      const FilterItem = document.querySelector("div.yn-btfdd-filter-by-dd div.yn-dropdown-trigger-elem");
+      FilterItem.click();
+    },
+    checkPayload:null,
+    resultPayload:null,
+    checkInterval:50,
+    maxInterval:2000,
+    note:"Filter List Click"
+  };
+}
+
+//
+function FilterAllTasksClickAction(){
+  //li[yn-filter-by='ALL_TASKS']
+  let AllTasksItem = null;
+  return {
+    checkFunction:() => {
+      if(!AllTasksItem){
+        AllTasksItem = document.querySelector("li[yn-filter-by='ALL_TASKS']");
+      }
+      return isVisibleElement(AllTasksItem);
+    },
+    resultFunction:() => {
+      AllTasksItem.click();
+    },
+    checkPayload:null,
+    resultPayload:null,
+    checkInterval:50,
+    maxInterval:2000,
+    note:"Filter AllTasks Click"
+  };
+}
+
+//
 // click on the question-mark icon if the
 // search field isn't yet available
 //
 function CreateQuestionIconClickAction(){
   return {checkFunction: () => {
-    return true; // no reason to wait at this point
+    // wait for the filter to be done
+    const task = document.querySelector("div[yn-type='TASK']");
+    return task;
   },
   resultFunction:() => {
     if(!isVisible(".yn-input-search") || isDisabled(".yn-input-search")){
@@ -236,6 +303,7 @@ function CreateEnterToddAttentionSearchAction(){
         FillTextboxValue(".yn-input-search", ToddAttentionTag);
 
         let text = document.querySelector('.yn-input-search');
+        text.click();
         text.focus();
 
         /*
@@ -288,7 +356,7 @@ function SetupSnoozeButton(){
 function CreateSnoozeOptionAction(){
   return {
     checkFunction: () => {
-      const optionListFirstElement = document.querySelector("li[data-tooltip='Save task as template']");
+      const optionListFirstElement = document.querySelector("li[data-tooltip='Delete this task permanently']");
       return optionListFirstElement;
     },
     resultFunction: CreateSnoozeOption,
