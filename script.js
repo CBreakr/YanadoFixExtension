@@ -6,7 +6,50 @@
 // INITIAL SETUP
 //
 
-RunSetup();
+//
+//
+// FIRST WE CHECK THAT THE UTILITIES HAVE BEEN LOADED
+//
+//
+
+function script_init(){
+  var checks = 0;
+  var checkLimit = 200;
+  var checkTime = 20;
+
+  const rollingTransferCheck = function(){
+    console.log(`MAIN SCRIPT checking for UTILITIES: ${checks} out of ${checkLimit}`);
+    try{
+      if(__triggerKeyboardEvent != undefined){
+        console.log("do we have the functions loaded?");
+        RunSetup();
+      }
+      else {
+        ElseAndCatch();
+      }
+    }
+    catch(err){
+      ElseAndCatch();
+    }
+  };
+
+  const ElseAndCatch = function(){
+    if(checks < checkLimit){
+      checks++;
+      setTimeout(rollingTransferCheck, checkTime);
+    }
+  }
+
+  rollingTransferCheck();
+}
+
+script_init();
+
+//
+//
+// THEN WE START THE SCRIPT AS USUAL
+//
+//
 
 function RunSetup(){
   AllTaskClickHeader();
@@ -768,6 +811,7 @@ function CloseItem(){
 </div>
 */
 
+/*
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////
@@ -956,3 +1000,4 @@ function __triggerKeyboardEvent(el, keyCode)
 
     el.dispatchEvent ? el.dispatchEvent(eventObj) : el.fireEvent("onkeypress", eventObj);
 }
+*/

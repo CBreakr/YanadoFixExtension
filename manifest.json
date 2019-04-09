@@ -12,5 +12,5 @@
     "run_at": "document_end"
   }],
 
-  "web_accessible_resources": ["script.js"]
+  "web_accessible_resources": ["script.js", "secondscript.js", "utilities.js"]
 }
