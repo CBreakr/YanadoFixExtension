@@ -264,6 +264,32 @@ function CreateTaskLoadingWaitAction(){
 }
 
 //
+// click on the question-mark icon if the
+// search field isn't yet available
+//
+function CreateQuestionIconClickAction(){
+  return {checkFunction: () => {
+    // wait for the filter to be done
+    const task = document.querySelector("div[yn-type='TASK']");
+    return task;
+  },
+  resultFunction:() => {
+    if(!isVisible(".yn-input-search") || isDisabled(".yn-input-search")){
+      document.querySelector(".yn-toggle-search-icon").click();
+    }
+  },
+  failFunction: () => {
+    // if we're here, then just run the result function
+    return true;
+  },
+  checkPayload:null,
+  resultPayload:null,
+  checkInterval:50,
+  maxInterval:1000,
+  note:"question icon click"};
+}
+
+//
 function FilterIconClickAction(){
   // div.yn-bar-tasks-filter-trigger
   return {
@@ -321,28 +347,6 @@ function FilterAllTasksClickAction(){
     maxInterval:2000,
     note:"Filter AllTasks Click"
   };
-}
-
-//
-// click on the question-mark icon if the
-// search field isn't yet available
-//
-function CreateQuestionIconClickAction(){
-  return {checkFunction: () => {
-    // wait for the filter to be done
-    const task = document.querySelector("div[yn-type='TASK']");
-    return task;
-  },
-  resultFunction:() => {
-    if(!isVisible(".yn-input-search") || isDisabled(".yn-input-search")){
-      document.querySelector(".yn-toggle-search-icon").click();
-    }
-  },
-  checkPayload:null,
-  resultPayload:null,
-  checkInterval:50,
-  maxInterval:1000,
-  note:"question icon click"};
 }
 
 //

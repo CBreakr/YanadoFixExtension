@@ -163,10 +163,15 @@ function RunTimedLoopingCheck(
         failureFunctionReturn = failFunction();
       }
       if(!failureFunctionReturn){
+        // fail now and stop
         callback(new Error(`Ran out of time on: ${note}`));
       }
       else{
-        callback();
+        // continue on as usual
+        resultFunction(resultPayload, ActionList, index);
+        if(callback){
+          callback();
+        }
       }
     }
   }
