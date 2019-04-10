@@ -433,7 +433,8 @@ function CreateSnoozeOption(){
 
   console.log("Creating snooze!");
 
-  const optionListFirstElement = document.querySelector("li[data-tooltip='Save task as template']");
+  const selector = "li[data-tooltip='Delete this task permanently']";
+  const optionListFirstElement = document.querySelector(selector);
 
   if(optionListFirstElement){
     const optionList = optionListFirstElement.parentElement;
@@ -445,6 +446,9 @@ function CreateSnoozeOption(){
       RunSnooze();
     });
     optionList.appendChild(listItem);
+  }
+  else{
+    console.log(`can't find list element for snooze: ${selector}`);
   }
 }
 
