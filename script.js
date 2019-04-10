@@ -236,11 +236,25 @@ function CreateAllTaskClickAction(){
 function CreateTaskLoadingWaitAction(){
   return {checkFunction: () => {
     // wait for this to load
+    // ***
+    // this has the edge case of not working when
+    // there are no tasks currently displayed
+    // ... I want to at least wait for a this one here
     const task = document.querySelector("div[yn-type='TASK']");
     return task;
   },
   resultFunction:() => {
     ; // nothing to do in here, we just needed to wait
+  },
+  failFunction: () => {
+    // check if we have a filter in place already
+    if(isVisible(".yn-input-search")){
+      const input = document.querySelector(".yn-input-search");
+      if(input.value){
+        return true;
+      }
+      return false;
+    }
   },
   checkPayload:null,
   resultPayload:null,

@@ -132,6 +132,7 @@ function RunActions(Actions){
 function RunTimedLoopingCheck(
   {checkFunction,
   resultFunction,
+  failFunction,
   checkPayload,
   resultPayload,
   checkInterval,
@@ -157,7 +158,16 @@ function RunTimedLoopingCheck(
       setTimeout(loopFunction, checkInterval);
     }
     else{
-      callback(new Error(`Ran out of time on: ${note}`));
+      let failureFunctionReturn = false;
+      if(failFunction && typeof failFunction === "function"){
+        failureFunctionReturn = failFunction();
+      }
+      if(!failureFunctionReturn){
+        callback(new Error(`Ran out of time on: ${note}`));
+      }
+      else{
+        callback();
+      }
     }
   }
 
