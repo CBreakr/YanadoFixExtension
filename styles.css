@@ -50,10 +50,13 @@ Hide the due date times outside of 6AM-8PM
 }
 
 /*
-ToddButton
+ToddButton & DoneButton
+
+taken from: https://1stwebdesigner.com/free-code-snippets-css-buttons/
+
 */
 
-.ToddButton {
+.ToddButton, .DoneButton {
   color: #fff;
   text-shadow: 0 1px 0 rgba(0,0,0,.2);
 
@@ -64,6 +67,11 @@ ToddButton
   background-image: -o-linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
   background-image: linear-gradient(top, rgba(255,255,255,.3), rgba(255,255,255,0));
 
+  height:22px;
+  width:93px;
+}
+
+.ToddButton {
   background-color: #269CE9;
   border-color: #269CE9;
 }
@@ -82,6 +90,27 @@ ToddButton
   border-color: #269CE9;
   background: #269CE9;
   color: #93D5FF;
+}
+
+.DoneButton{
+  background-color: #57a957;
+  border-color: #57a957;
+}
+
+.DoneButton:hover{
+  background-color: #62c462;
+}
+
+.DoneButton:active{
+  background: #57a957;
+}
+
+.DoneButton[disabled],
+.DoneButton[disabled]:hover,
+.DoneButton[disabled]:active{
+  border-color: #57A957;
+  background: #57A957;
+  color: #D2FFD2;
 }
 
 /*

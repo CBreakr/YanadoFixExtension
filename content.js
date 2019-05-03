@@ -1,7 +1,8 @@
 
 AddScriptToPage("utilities.js");
-AddScriptToPage("script.js");
-AddScriptToPage("secondscript.js");
+AddScriptToPage("headerclick.js");
+AddScriptToPage("toddbutton.js");
+AddScriptToPage("snoozebutton.js");
 
 function AddScriptToPage(filename){
   var source = document.createElement('script');
@@ -11,4 +12,6 @@ function AddScriptToPage(filename){
       this.remove();
   };
   (document.head || document.documentElement).appendChild(source);
+
+  console.log(`script added: ${filename}`);
 }

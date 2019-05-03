@@ -202,3 +202,5 @@ function __triggerKeyboardEvent(el, keyCode)
 
     el.dispatchEvent ? el.dispatchEvent(eventObj) : el.fireEvent("onkeypress", eventObj);
 }
+
+const UtilitiesLoaded = true;
