@@ -1,8 +1,10 @@
 
 AddScriptToPage("utilities.js");
+AddScriptToPage("yanadoAPICall.js");
 AddScriptToPage("headerclick.js");
 AddScriptToPage("toddbutton.js");
 AddScriptToPage("snoozebutton.js");
+AddScriptToPage("donebutton.js");
 
 function AddScriptToPage(filename){
   var source = document.createElement('script');

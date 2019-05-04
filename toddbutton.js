@@ -47,7 +47,7 @@ const ToddAttentionTag = "#ToddAttention";
 //
 //
 function CreateToddButton() {
-  console.log("INSIDE CREATE BUTTON");
+  console.log("INSIDE CREATE TODD BUTTON");
   RunTimedLoopingCheck(CreateToddButtonAction());
 }
 
@@ -58,6 +58,7 @@ function CreateToddButtonAction(){
   return {
     checkFunction:isVisible,
     resultFunction:() => {
+      console.log("CREATING TODD BUTTON RESULT");
       const YanadoButton = document.getElementById("yn-top-bar-widget");
       var rect = YanadoButton.getBoundingClientRect();
 

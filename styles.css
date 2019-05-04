@@ -131,3 +131,16 @@ alter the comment save
   opacity: 0.6;
   color: rgb(81, 93, 111);
 }
+
+/*
+modal display
+*/
+.modal{
+  z-index:100;
+  position:absolute;
+  right:50%;
+  top:10%;
+  height:300px;
+  width:500px;
+  background-color: #eeeeee;
+}

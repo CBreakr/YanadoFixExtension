@@ -16,5 +16,7 @@
     "headerclick.js",
     "toddbutton.js",
     "snoozebutton.js",
+    "donebutton.js",
+    "yanadoAPICall.js",
     "utilities.js"]
 }
