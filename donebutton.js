@@ -144,11 +144,12 @@ async function RunDoneAPICalls(){
     }
     else{
       // hmm...
-      alert("The API is not functioning as expected, please contact Rob");
+      modalData.error = "THE API IS NOT FUNCTIONING AS EXPECTED, PLEASE CONTACT ROB!!";
+      UpdateModalDisplay();
     }
   }
   catch(error){
-    console.log("THERE'S BEEN AN ERROR");
+    console.log(`Error: ${error}`);
   }
 }
 
@@ -156,7 +157,7 @@ async function RunDoneAPICalls(){
 //
 //
 async function TestPUTAPI(){
-  return true;
+  return false;
 }
 
 //
@@ -213,6 +214,9 @@ async function ProcessDoneTasksInAllLists(){
       console.log(`no response for list: ${listId}`);
     }
   }
+
+  // final update
+  UpdateModalDisplay();
 }
 
 //
@@ -261,13 +265,17 @@ function CreateModalForm(){
   const modalDiv = document.createElement("div");
   modalDiv.classList.add("modal");
 
-  const displayDiv = document.createElement("div");
-  modalDiv.appendChild(displayDiv);
-
   const closeButton = document.createElement("button");
   closeButton.type = "button";
   closeButton.appendChild(document.createTextNode("Close"));
+  closeButton.classList.add("CloseButton");
   modalDiv.appendChild(closeButton);
+
+  const hr = document.createElement("hr");
+  modalDiv.appendChild(hr);
+
+  const displayDiv = document.createElement("div");
+  modalDiv.appendChild(displayDiv);
 
   closeButton.addEventListener("click", (event) => {
     modalDiv.remove();
@@ -285,10 +293,17 @@ function CreateModalForm(){
     */
     // use the modalData to update the form
     let display = `<br />&nbsp;&nbsp;Completed: ${modalData.listCompleteCount} LISTS out of ${modalData.listTotal}`;
-    display += `<br /><br />&nbsp;&nbsp;Completed: ${modalData.taskInListCompleteCount} TASKS out of ${modalData.taskInListTotal} in current list`;
+
     if(modalData.error){
-      display += `<br /><br />&nbsp;&nbsp;WE HAVE AN ERROR, PLEASE TRY AGAIN AT A LATER TIME: <br /> ${modalData.error}`;
+      display += `<br /><br />&nbsp;&nbsp;We have an error, please try again at a later time: <br />&nbsp;&nbsp;${modalData.error}<br /><hr /><br />`;
     }
+    else if(modalData.listTotal == modalData.listCompleteCount){
+      display += "<br /><br />&nbsp;&nbsp;PROCESSING IS FINISHED<br /><br />";
+    }
+    else{
+      display += `<br /><br />&nbsp;&nbsp;Completed: ${modalData.taskInListCompleteCount} TASKS out of ${modalData.taskInListTotal} in current list<br />`;
+    }
+
     displayDiv.innerHTML = display;
   }
 }

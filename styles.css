@@ -56,7 +56,7 @@ taken from: https://1stwebdesigner.com/free-code-snippets-css-buttons/
 
 */
 
-.ToddButton, .DoneButton {
+.ToddButton, .DoneButton, .CloseButton {
   color: #fff;
   text-shadow: 0 1px 0 rgba(0,0,0,.2);
 
@@ -113,6 +113,30 @@ taken from: https://1stwebdesigner.com/free-code-snippets-css-buttons/
   color: #D2FFD2;
 }
 
+
+.CloseButton {
+  margin-top:3px;
+  margin-left:3px;
+  background-color: #ca3535;
+  border-color: #c43c35;
+}
+
+.CloseButton:hover {
+  background-color: #ee5f5b;
+}
+
+.CloseButton:active {
+  background: #c43c35;
+}
+
+.CloseButton[disabled],
+.CloseButton[disabled]:hover,
+.CloseButton[disabled]:active{
+  border-color: #C43C35;
+  background: #C43C35;
+  color: #FFD3D3;
+}
+
 /*
 alter the comment save
 */
@@ -140,7 +164,8 @@ modal display
   position:absolute;
   right:50%;
   top:10%;
-  height:300px;
-  width:500px;
+  /* height:175px; */
+  width:550px;
   background-color: #eeeeee;
+  border: 2px solid;
 }
