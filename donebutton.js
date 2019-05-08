@@ -153,11 +153,91 @@ async function RunDoneAPICalls(){
   }
 }
 
+const TEST_API_TASK_ID = "22412431";
+
 //
 //
 //
 async function TestPUTAPI(){
-  return false;
+
+  try{
+    options = {
+      URLExtension: `tasks/${TEST_API_TASK_ID}`,
+      Method: GET_METHOD,
+      params: null,
+      Description: `GET test API task`
+    };
+
+    const initialTask = JSON.parse(await APICallAsPromise(options));
+
+    console.log(initialTask);
+
+    options.Method = PUT_METHOD;
+    options.params = {
+      "name":"AAA",
+      "taskId":"22412431",
+      "listId": "project_51450_1550598362429",
+      "dueDate":null
+    };
+    options.Description = "UPDATE test API task";
+
+    const updatedTask = JSON.parse(await APICallAsPromise(options));
+
+    console.log(updatedTask);
+
+    if(CheckTaskObjectUpdateMatch(initialTask, updatedTask)){
+      options.params.name = initialTask.name;
+      options.params.dueDate = initialTask.dueDate;
+
+      console.log(options);
+
+      const resetTask = await APICallAsPromise(options);
+      console.log(resetTask);
+
+      return true;
+    }
+    else{
+      console.log("object mismatch");
+      return false;
+    }
+  }
+  catch(error){
+    console.log("Error: ");
+    console.log(error);
+    return false;
+  }
+}
+
+function CheckTaskObjectUpdateMatch(first, second){
+  var firstKeys = Object.keys(first);
+  var secondKeys = Object.keys(second);
+
+  console.log(firstKeys);
+  console.log(secondKeys);
+
+  if(firstKeys.length != secondKeys.length){
+    console.log(`key length mismatch: ${firstKeys.length} vs ${secondKeys.length}`);
+    return false;
+  }
+
+  for(let i = 0; i < firstKeys.length; i++){
+    // skip these two
+    let key = firstKeys[i];
+    if(key == "name" || key == "dueDate"){
+      continue;
+    }
+
+    if(!secondKeys.includes(key)){
+      console.log(`missing key at ${key}`);
+      return false;
+    }
+    if(first[key] != second[key]){
+      console.log(`key mismatch: ${first[key]} vs ${second[key]}`);
+      return false;
+    }
+  }
+
+  return true;
 }
 
 //
@@ -188,6 +268,8 @@ async function ProcessDoneTasksInAllLists(){
       break;
     }
 
+    console.log(`list name: ${lists[i].name}`);
+
     let listId = lists[i].id;
 
     options = {
@@ -205,7 +287,16 @@ async function ProcessDoneTasksInAllLists(){
       modalData.taskInListTotal = tasks.length;
       UpdateModalDisplay();
 
-      await GetIndividualTasksInList(tasks);
+      for(let j = 0; j < tasks.length; j++){
+        let taskId = tasks[j].taskId;
+        const task = JSON.parse(await GetIndividualTaskById(taskId));
+
+        console.log(task);
+
+        await RemoveDueDateFromTaskIfDone(task);
+        modalData.taskInListCompleteCount++;
+        UpdateModalDisplay();
+      }
 
       modalData.listCompleteCount++;
       ResetModalTaskData();
@@ -219,35 +310,59 @@ async function ProcessDoneTasksInAllLists(){
   UpdateModalDisplay();
 }
 
-//
-//
-//
-async function GetIndividualTasksInList(tasks){
+async function GetIndividualTaskById(taskId){
   const options = {
-    URLExtension: null,
+    URLExtension: `tasks/${taskId}`,
     Method: GET_METHOD,
     params: null,
-    Description:"GET individual task"
+    Description: `GET task to check ${taskId}`
   };
 
-  for(let i = 0; i < tasks.length; i++){
-    if(modalData.haltCommand){
-      console.log("HALT HALT HALT HALT HALT HALT");
-      break;
-    }
+  return await APICallAsPromise(options);
+}
 
-    const taskId = tasks[i].taskId;
-    options.URLExtension = `tasks/${taskId}`;
+const statusDoneName = "Done"; // statusName
 
-    try{
-      const task = await APICallAsPromise(options);
-      console.log(task);
-      modalData.taskInListCompleteCount++;
-      UpdateModalDisplay();
+//
+//
+//
+async function RemoveDueDateFromTaskIfDone(task){
+  try{
+    console.log(`Remove Due Date: ${task.name}, with ${task.statusName}, at ${task.dueDate}`);
+
+    let dueDate = task.dueDate;
+
+    if(task.statusName == statusDoneName && dueDate){
+      let name = task.name;
+      dueDate = dueDate.substring(0, dueDate.indexOf("T"));
+      const year = dueDate.substring(0,4);
+      const monthAndDay = dueDate.substring(5);
+      dueDate = `${monthAndDay}-${year}`;
+      name = `${name} (DD: ${dueDate})`;
+      console.log(name);
+
+      const data = {
+        "name":name,
+        "taskId":task.taskId,
+        "listId": task.listId,
+        "dueDate":null
+      };
+
+      const options = {
+        URLExtension: `tasks/${data.taskId}`,
+        Method: PUT_METHOD,
+        params: data,
+        Description: `UPDATE done task with due date`
+      };
+
+      const updatedTask = await APICallAsPromise(options);
     }
-    catch(error){
-      console.log(`we have an error: ${error}`);
+    else{
+      console.log(`No due date needed: ${task.statusName} ${dueDate}`);
     }
+  }
+  catch(error){
+    console.log(`error in done task: ${error}`);
   }
 }
 
