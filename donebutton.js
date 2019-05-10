@@ -51,6 +51,7 @@ function ResetModalData(){
   modalData.taskInListCompleteCount = 0;
   modalData.error = null;
   modalData.haltCommand = false;
+  modalData.isTesting = false;
 }
 
 function ResetModalTaskData(){
@@ -160,6 +161,22 @@ const TEST_API_TASK_ID = "22412431";
 //
 async function TestPUTAPI(){
 
+  modalData.isTesting = true;
+  UpdateModalDisplay();
+
+  console.log("beginning testing");
+
+  const ret = await InnerAPI_PUT_Test();
+
+  console.log(`done testing: ${ret}`);
+
+  modalData.isTesting = false;
+  UpdateModalDisplay();
+
+  return ret;
+}
+
+async function InnerAPI_PUT_Test(){
   try{
     options = {
       URLExtension: `tasks/${TEST_API_TASK_ID}`,
@@ -193,6 +210,8 @@ async function TestPUTAPI(){
 
       const resetTask = await APICallAsPromise(options);
       console.log(resetTask);
+
+      console.log("SUCCESSFUL TEST");
 
       return true;
     }
@@ -407,16 +426,24 @@ function CreateModalForm(){
     modalData.taskInListCompleteCount = 0;
     */
     // use the modalData to update the form
-    let display = `<br />&nbsp;&nbsp;Completed: ${modalData.listCompleteCount} LISTS out of ${modalData.listTotal}`;
 
-    if(modalData.error){
-      display += `<br /><br />&nbsp;&nbsp;We have an error, please try again at a later time: <br />&nbsp;&nbsp;${modalData.error}<br /><hr /><br />`;
-    }
-    else if(modalData.listTotal == modalData.listCompleteCount){
-      display += "<br /><br />&nbsp;&nbsp;PROCESSING IS FINISHED<br /><br />";
+    let display = "";
+
+    if(modalData.isTesting){
+      display = "<br />Testing API, please wait a momemt<hr />";
     }
     else{
-      display += `<br /><br />&nbsp;&nbsp;Completed: ${modalData.taskInListCompleteCount} TASKS out of ${modalData.taskInListTotal} in current list<br />`;
+      display = `<br />&nbsp;&nbsp;Completed: ${modalData.listCompleteCount} LISTS out of ${modalData.listTotal}`;
+
+      if(modalData.error){
+        display += `<br /><br />&nbsp;&nbsp;We have an error, please try again at a later time: <br />&nbsp;&nbsp;${modalData.error}<br /><hr /><br />`;
+      }
+      else if(modalData.listTotal == modalData.listCompleteCount){
+        display += "<br /><br />&nbsp;&nbsp;PROCESSING IS FINISHED<br /><br />";
+      }
+      else{
+        display += `<br /><br />&nbsp;&nbsp;Completed: ${modalData.taskInListCompleteCount} TASKS out of ${modalData.taskInListTotal} in current list<br />`;
+      }
     }
 
     displayDiv.innerHTML = display;
