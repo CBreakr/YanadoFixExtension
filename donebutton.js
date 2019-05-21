@@ -349,19 +349,9 @@ async function RemoveDueDateFromTaskIfDone(task){
   try{
     console.log(`Remove Due Date: ${task.name}, with ${task.statusName}, at ${task.dueDate}`);
 
-    let dueDate = task.dueDate;
-
-    if(task.statusName == statusDoneName && dueDate){
-      let name = task.name;
-      dueDate = dueDate.substring(0, dueDate.indexOf("T"));
-      const year = dueDate.substring(0,4);
-      const monthAndDay = dueDate.substring(5);
-      dueDate = `${monthAndDay}-${year}`;
-      name = `${name} (DD: ${dueDate})`;
-      console.log(name);
-
+    if(task.statusName == statusDoneName && task.dueDate){
       const data = {
-        "name":name,
+        "name":AppendDueDateToTaskName(task),
         "taskId":task.taskId,
         "listId": task.listId,
         "dueDate":null

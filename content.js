@@ -5,6 +5,7 @@ AddScriptToPage("headerclick.js");
 AddScriptToPage("toddbutton.js");
 AddScriptToPage("snoozebutton.js");
 AddScriptToPage("donebutton.js");
+AddScriptToPage("marksentbutton.js");
 
 function AddScriptToPage(filename){
   var source = document.createElement('script');

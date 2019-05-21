@@ -427,7 +427,7 @@ function AddSnoozeValueActionAndClose(){
       }
       input.value = val;
       input.focus()
-      CloseItem();
+      CloseCurrentTask();
     },
     checkPayload: null,
     resultPayload: null,
@@ -452,13 +452,4 @@ function FindSnoozeInput(){
   }
 
   return null;
-}
-
-function CloseItem(){
-  // at the end, close the task down
-  const closeIcon = document.querySelector("span.yn-fl-close");
-  closeIcon.focus();
-  setTimeout(() => {
-    closeIcon.click();
-  }, 100);
 }

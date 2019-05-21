@@ -18,5 +18,6 @@
     "snoozebutton.js",
     "donebutton.js",
     "yanadoAPICall.js",
+    "marksentbutton.js",
     "utilities.js"]
 }

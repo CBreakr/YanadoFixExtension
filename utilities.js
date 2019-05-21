@@ -15,6 +15,42 @@
 //
 //
 //
+function GetDashedCurrentDate(includeEmptyTimestamp){
+  const today = new Date();
+
+  const year = today.getFullYear();
+  let month = (today.getMonth() + 1);
+  if(month < 10){
+    month = "0" + month;
+  }
+  const day = today.getDate();
+
+  let dateString = `${year}-${month}-${day}`;
+
+  if(includeEmptyTimestamp){
+    dateString += "T00:00:00.000Z";
+  }
+
+  console.log(`dashed date: ${dateString}`);
+
+  return dateString;
+}
+
+//
+//
+//
+function CloseCurrentTask(){
+  // at the end, close the task down
+  const closeIcon = document.querySelector("span.yn-fl-close");
+  closeIcon.focus();
+  setTimeout(() => {
+    closeIcon.click();
+  }, 100);
+}
+
+//
+//
+//
 function hasClass(element, className){
   if(element
     && className
@@ -45,6 +81,10 @@ function isVisible(identifier) {
 }
 
 function isVisibleElement(element){
+  if(!element){
+    console.log("No element provided");
+    return false;
+  }
   var style = window.getComputedStyle(element);
 
   const vistest1 = !!(element.offsetWidth || element.offsetHeight || element.getClientRects().length);
@@ -160,7 +200,7 @@ function RunTimedLoopingCheck(
     else{
       let failureFunctionReturn = false;
       if(failFunction && typeof failFunction === "function"){
-        failureFunctionReturn = failFunction();
+        failureFunctionReturn = false || failFunction();
       }
       if(!failureFunctionReturn){
         // fail now and stop

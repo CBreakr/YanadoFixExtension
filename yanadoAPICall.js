@@ -121,6 +121,9 @@ function formatGETParams(params){
   }
 }
 
+//
+//
+//
 function createPOSTPUTParameters(params, request){
   if(params){
     const data = new FormData();
@@ -129,6 +132,24 @@ function createPOSTPUTParameters(params, request){
     }
   }
   return null;
+}
+
+//
+//
+//
+function AppendDueDateToTaskName(task){
+  let name = task.name;
+
+  if(task.dueDate){
+    let dueDate = task.dueDate.substring(0, task.dueDate.indexOf("T"));
+    const year = dueDate.substring(0,4);
+    const monthAndDay = dueDate.substring(5);
+    dueDate = `${monthAndDay}-${year}`;
+    name = `${name} (DD: ${dueDate})`;
+    console.log(name);
+  }
+
+  return name;
 }
 
 const APILoaded = true;
