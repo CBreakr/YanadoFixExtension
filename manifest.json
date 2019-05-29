@@ -13,11 +13,12 @@
   }],
 
   "web_accessible_resources": [
-    "headerclick.js",
-    "toddbutton.js",
-    "snoozebutton.js",
-    "donebutton.js",
+    "features/headerclick.js",
+    "features/toddbutton.js",
+    "features/snoozebutton.js",
+    "features/donebutton.js",
     "yanadoAPICall.js",
-    "marksentbutton.js",
-    "utilities.js"]
+    "features/marksentbutton.js",
+    "utilities.js",
+    "features/archive_subtask_hover.js"]
 }
