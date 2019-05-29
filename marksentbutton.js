@@ -107,7 +107,28 @@ function RunMarkSent(){
   console.log("MARKING SENT!");
   const Actions = [];
 
-  Actions.push(RunMarkSentAPICallAction());
+  const currentDate = GetDashedCurrentDate();
+  let sentDate = null;
+
+  let count = 0;
+  let valid = false;
+  let message = "Enter sent date (YYYY-MM-DD)";
+
+  while(!valid && count++ < 3){
+    sentDate = prompt(message, currentDate);
+    valid = isStringValidDashedDate(sentDate);
+    if(count == 1){
+      message = "[INVALID] " + message;
+    }
+  }
+
+  if(!valid){
+    CloseCurrentTask();
+    alert("please try again later");
+    return;
+  }
+
+  Actions.push(RunMarkSentAPICallAction(addEmptyTimestampToDate(sentDate)));
 
   RunActions(Actions);
 }
@@ -115,23 +136,18 @@ function RunMarkSent(){
 //
 //
 //
-function RunMarkSentAPICallAction(){
-  let statusElement = null;
-
+function RunMarkSentAPICallAction(sentDate){
   return {
     checkFunction: () => {
       return true;
-    },
-    failFunction:() => {
-      statusElement = null;
     },
     resultFunction: async () => {
       try{
         const taskId = GetTaskId();
         CloseCurrentTask();
-        const task = await GetTaskFromAPICall(taskId);        
+        const task = await GetTaskFromAPICall(taskId);
         const doneStatusId = await GetDoneStatusCodeFromAPICall(task.listId);
-        await MarkAsSentAPICall(task, doneStatusId);
+        await MarkAsSentAPICall(task, doneStatusId, sentDate);
       }
       catch(err){
         alert(`error on Mark Sent: ${err}`);
@@ -206,7 +222,7 @@ async function GetDoneStatusCodeFromAPICall(listId){
 //
 //
 //
-async function MarkAsSentAPICall(task, doneStatusId){
+async function MarkAsSentAPICall(task, doneStatusId, sentDate){
     const sentPropName = GetSentPropName(task);
 
     console.log(task);
@@ -225,7 +241,7 @@ async function MarkAsSentAPICall(task, doneStatusId){
 
     console.log("initial options set");
 
-    options.params[sentPropName] = GetDashedCurrentDate(true);
+    options.params[sentPropName] = sentDate;
 
     if(task.statusId != doneStatusId){
       options.params.statusId = doneStatusId;

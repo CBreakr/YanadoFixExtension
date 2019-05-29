@@ -15,6 +15,72 @@
 //
 //
 //
+function isStringValidDashedDate(str){
+  try{
+    const {day, month, year} = getDayMonthYearFromString(str);
+
+    if(!isValidDate(day, month, year)){
+      return false;
+    }
+  }
+  catch(err){
+    return false;
+  }
+
+  return true;
+}
+
+function getDayMonthYearFromString(str){
+  if(!str){
+    return false;
+  }
+
+  let [year, month, day] = str.split("-");
+  day = parseInt(day);
+  month = parseInt(month);
+  year = parseInt(year);
+
+  // check if they are NaN
+  if(day != day || month != month || year != year){
+    throw new Error("not all date elements are numbers");
+  }
+
+  return {day, month, year};
+}
+
+const dayMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+function isValidDate(day, month, year){
+  // check that year is current year or earlier
+  // check that month is within 1-12
+  // check that day is within month range
+  // check for february leap year
+  //    - is divisible by 4  (don't worry about other rules)
+
+  const monthLimit = dayMonth[month-1];
+  const dayWithinMonthLimit = (day <= monthLimit);
+  const yearDivisibleByFour = year%4 == 0;
+
+  if(dayWithinMonthLimit){
+    return true;
+  }
+  else if(month == 2 && day == 29 && yearDivisibleByFour){
+    return true;
+  }
+
+  return false;
+}
+
+//
+//
+//
+function addEmptyTimestampToDate(date){
+  return date += "T00:00:00.000Z";
+}
+
+//
+//
+//
 function GetDashedCurrentDate(includeEmptyTimestamp){
   const today = new Date();
 
@@ -28,7 +94,7 @@ function GetDashedCurrentDate(includeEmptyTimestamp){
   let dateString = `${year}-${month}-${day}`;
 
   if(includeEmptyTimestamp){
-    dateString += "T00:00:00.000Z";
+    dateString = addEmptyTimestampToDate(dateString);
   }
 
   console.log(`dashed date: ${dateString}`);
